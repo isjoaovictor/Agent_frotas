@@ -11,4 +11,5 @@ streamlit>=1.48,<2
 tiktoken
 langchain[mcp]>=1.4,<2
 fastmcp
+typesafe-sdk
 langfuse

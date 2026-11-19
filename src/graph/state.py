@@ -13,6 +13,9 @@ class RAGState(TypedDict, total=False):
 
     documentos: list[Document]
     contextos: list[Document]
+    intent_confidence: float
+    intent_probabilities: dict[str, float]
+    suficiente: bool
 
     expandido: bool
     decisao: str

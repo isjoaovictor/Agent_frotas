@@ -8,7 +8,7 @@ mcp = FastMCP("Agent_frotas")
 
 @mcp.tool
 def reserva_ok(combustivel_t: float, reserva_t: float) -> bool:
-    """Verifica se o combustível a bordo cobre a reserva mínima.
+    """Função: Verifica se o combustível a bordo cobre a reserva mínima.
 
     Recebe combustível e reserva em toneladas.
     Retorna True quando o combustível é maior ou igual à reserva.
@@ -42,7 +42,7 @@ def velocidade_efetiva(
 
 @mcp.tool
 def calcular_eta_horas(distancia_nm: float, velocidade_kn: float) -> float:
-    """Calcula o tempo estimado de viagem em horas.
+    """Função: Calcula o tempo estimado de viagem em horas.
 
     Recebe distância em milhas náuticas e velocidade efetiva em nós.
     A distância deve ser não negativa e a velocidade deve ser positiva.
