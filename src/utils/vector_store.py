@@ -15,40 +15,37 @@ DADOS = Path(__file__).resolve().parents[1] / "dados" / "manual_operacoes.txt"
     
 load_dotenv(Path(__file__).resolve().parents[1] / ".env")
 
-def carregar_chunks():
-    """Carrega os chunks de texto a partir do arquivo de dados."""
-    
+def carregar_chunks(arquivo: Path = DADOS):
+    """Divide um documento em seções e identifica a origem de cada trecho."""
     splitter = MarkdownHeaderTextSplitter(
         headers_to_split_on=[("##", "secao")],
-        strip_headers=False
+        strip_headers=False,
     )
 
-    chunks = splitter.split_text(DADOS.read_text(encoding="utf-8"))
+    texto = arquivo.read_text(encoding="utf-8-sig")
+    chunks = splitter.split_text(texto)
 
-    for posicao, dado in enumerate(chunks, start=1):
-        dado.metadata["doc"] = DADOS.stem
-        dado.metadata["posicao"] = posicao
-        print(posicao, dado)
+    for posicao, chunk in enumerate(chunks, start=1):
+        chunk.metadata["doc"] = arquivo.stem
+        chunk.metadata["posicao"] = posicao
 
     return chunks
 
 
 
 
-def get_vector_store():
-    """Cria e retorna um InMemoryVectorStore com os chunks carregados."""
-    
+def get_vector_store(doc: str = "manual_operacoes"):
+    """Cria o índice semântico para o documento solicitado."""
+    arquivo = DADOS.with_name(f"{doc}.txt")
+    chunks = carregar_chunks(arquivo)
 
     embeddings = OpenAIEmbeddings(
         model="openai/text-embedding-3-small",
         api_key=os.environ["API_KEY"],
         base_url="https://openrouter.ai/api/v1",
     )
-    
-    chunks = carregar_chunks()
-    vector_store = InMemoryVectorStore.from_documents(chunks, embeddings)
-    
-    return vector_store
+
+    return InMemoryVectorStore.from_documents(chunks, embeddings)
 
 
 def buscar_lexical(pergunta, chunks, k=3):
@@ -66,16 +63,18 @@ def buscar_lexical(pergunta, chunks, k=3):
     return resultados
 
 
-def buscar_hibrida(pergunta, k=3):
+def buscar_hibrida(pergunta, k=3, doc="manual_operacoes"):
     """Combina buscas semântica e lexical utilizando RRF."""
 
-    vector_store = get_vector_store()
+    vector_store = get_vector_store(doc)
 
     ranking_semantico = vector_store.similarity_search(
         pergunta, k=k
     )
 
-    chunks = carregar_chunks()
+    arquivo = DADOS.with_name(f"{doc}.txt")
+    chunks = carregar_chunks(arquivo)
+    
     ranking_lexical = buscar_lexical(pergunta, chunks, k=k)
 
     pontuacoes_rrf = {}

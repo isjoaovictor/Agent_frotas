@@ -1,49 +1,51 @@
+from langgraph.graph import END, START, StateGraph
 
-from langgraph.graph import StateGraph, START, END
-
+from graph.node.analyze import analyze
+from graph.node.extract_frota import extract_frota
+from graph.node.format_frota import format_frota
+from graph.node.prepare import prepare
+from graph.node.retrieve_frota import retrieve_frota
+from graph.node.retrieve_regras_calculo import retrieve_regras_calculo
+from graph.node.tools import tools
 from graph.state import RAGState
-from graph.node.entrada import entrada
-from graph.node.busca import busca
-from graph.node.verificacao import verificacao
-from graph.node.decisao import decisao
-from graph.node.expansao import expansao
-from graph.node.resposta import resposta
 
+
+def route_after_analyze(state: RAGState) -> str:
+    """Continua nas ferramentas ou encaminha a conclusão para formatação."""
+    ultima_mensagem = state["messages"][-1]
+
+    if ultima_mensagem.tool_calls:
+        return "tools"
+
+    return "format_frota"
 
 
 builder = StateGraph(RAGState)
 
+builder.add_node("retrieve_frota", retrieve_frota)
+builder.add_node("retrieve_regras_calculo", retrieve_regras_calculo)
+builder.add_node("extract_frota", extract_frota)
+builder.add_node("prepare", prepare)
+builder.add_node("analyze", analyze)
+builder.add_node("tools", tools)
+builder.add_node("format_frota", format_frota)
 
-builder.add_node("entrada", entrada)
-builder.add_node("busca", busca)
-builder.add_node("verificacao", verificacao)
-builder.add_node("decisao", decisao)
-builder.add_node("expansao", expansao)
-builder.add_node("resposta", resposta)
+builder.add_edge(START, "retrieve_frota")
+builder.add_edge("retrieve_frota", "retrieve_regras_calculo")
+builder.add_edge("retrieve_regras_calculo", "extract_frota")
+builder.add_edge("extract_frota", "prepare")
+builder.add_edge("prepare", "analyze")
 
-
-builder.add_edge(START, "entrada")
-builder.add_edge("entrada", "busca")
-builder.add_edge("busca", "verificacao")
-builder.add_edge("verificacao", "decisao")
-
-# Caminhos escolhidos pelo nó de decisão
 builder.add_conditional_edges(
-    "decisao",
-    lambda state: state["decisao"],
+    "analyze",
+    route_after_analyze,
     {
-        "responder": "resposta",
-        "expandir": "expansao",
-        "rebuscar": "busca",
-        "revisao_humana": "resposta",
-        "nao_encontrado": "resposta"
-    }
+        "tools": "tools",
+        "format_frota": "format_frota",
+    },
 )
 
-# Após expandir, verificamos novamente
-builder.add_edge("expansao", "verificacao")
-builder.add_edge("resposta", END)
+builder.add_edge("tools", "analyze")
+builder.add_edge("format_frota", END)
 
 graph = builder.compile()
-
-
