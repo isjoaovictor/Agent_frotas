@@ -2,13 +2,15 @@
 
 ## 1. Objetivo da implementação
 
-Atualizar a interface existente em `src/app/main.py` para o nome **Frota Agentic** e para uma composição inspirada na referência visual da Coxinh.IA fornecida por João. A página combina cabeçalho preto, abertura com formulário à esquerda e fotografia grande de navio à direita, seguida por uma área clara com três cartões de consulta.
+Atualizar a interface existente em `src/app/main.py` para o nome **Frota Agentic**. Usar a imagem de nome-base `site`, localizada em `src/utils/`, como referência da composição visual. A página combina cabeçalho preto, abertura com formulário à esquerda e fotografia grande de navio à direita, seguida por uma área clara com três cartões de consulta.
 
 Aplicar o visual corporativo da identidade existente. A logo fornecida em `src/utils/logo.jpeg`, as transições do layout e a animação de navio fazem parte da entrega.
 
 A implementação abrange a interface, seus recursos visuais, configuração do Streamlit e adaptação da chamada pública ao grafo assíncrono. As regras, prompts de negócio, extração, recuperação, servidor MCP e cálculos permanecem sob responsabilidade do backend. Usar o fluxo público disponível no repositório.
 
-## 2. Referência e tradução para o projeto
+## 2. Referência visual e conteúdo da aplicação
+
+Localizar `src/utils/site` pela extensão real do arquivo. Essa imagem orienta proporções, espaçamento, hierarquia tipográfica e distribuição das áreas. Todo o conteúdo visível será específico do Frota Agentic, incluindo marca, navegação, títulos, imagens, perguntas, ações e resultados. O arquivo `site` serve ao implementador e fica fora das imagens exibidas na página.
 
 | Elemento da referência | Aplicação no Frota Agentic |
 |---|---|
@@ -52,15 +54,15 @@ O verde existente orienta ações e foco. Status também precisam de texto ou s�
 
 Os arquivos serão colocados em `src/utils/` com os nomes-base `navio_1`, `navio_2` e `navio_3`. Preservar a extensão real. Resolver os recursos pelo caminho relativo ao arquivo Python, independentemente do diretório do terminal.
 
-Proposta de associação dos anexos fornecidos.
+Associação dos recursos do Frota Agentic, usando os nomes e extensões informados por João.
 
 | Recurso | Fotografia | Uso |
 |---|---|---|
 | `navio_1.webp` | Vista lateral do Vale Minas Gerais, arquivo original `vale_valemax_navio.webp`. | Foto principal e cartão de chegada. |
-| `navio_2.jpg` | Porta-contêineres em navegação sobre mar azul. | Cartão de reserva de combustível. |
-| `navio_3.jpg` | Popa com inscrição Vale Brasil, arquivo original `images.jpg`. | Cartão de velocidade em tempestade. |
+| `navio_2.jfif` | Porta-contêineres em navegação sobre mar azul. | Cartão de reserva de combustível. |
+| `navio_3.jfif` | Popa com inscrição Vale Brasil, arquivo original `images.jpg`. | Cartão de velocidade em tempestade. |
 
-Confirmar os arquivos existentes no momento da implementação e aceitar `.jpg`, `.jpeg`, `.png` ou `.webp` para esses nomes-base. Se houver mais de um arquivo para o mesmo nome-base, usar um mapeamento explícito. Se faltar uma imagem, manter o formulário utilizável e informar a pendência na entrega.
+Conferir as imagens existentes pelo conteúdo no momento da implementação e ajustar o enquadramento ao arquivo real. Confirmar os arquivos existentes no momento da implementação e aceitar `.jpg`, `.jpeg`, `.jfif`, `.png` ou `.webp` para esses nomes-base. Se houver mais de um arquivo para o mesmo nome-base, usar um mapeamento explícito. Se faltar uma imagem, manter o formulário utilizável e informar a pendência na entrega.
 
 A imagem principal deve ter proporção próxima de 16:10 e altura de 360 a 450 px no desktop. Aplicar `object-fit: cover` com foco no navio. Um gradiente sutil na borda esquerda pode integrar a fotografia ao fundo escuro. As fotos conservam o mar e a luz originais.
 
