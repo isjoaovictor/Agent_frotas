@@ -12,7 +12,7 @@ import streamlit as st
 
 APP_DIR = Path(__file__).resolve().parent
 SRC_DIR = APP_DIR.parent
-UTILS_DIR = SRC_DIR / "utils"
+DESIGN_DIR = SRC_DIR / "docs" / "design"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
@@ -44,19 +44,18 @@ ATALHOS = (
 # ---------------------------------------------------------------- recursos
 
 @st.cache_resource
-def carregar_imagem(base: str, pasta: str = "utils") -> str:
+def carregar_imagem(base: str) -> str:
     """Resolve o recurso pelo nome-base e devolve uma data URI. Vazio se ausente."""
-    diretorio = UTILS_DIR if pasta == "utils" else APP_DIR
     for extensao in EXTENSOES + (".svg",):
-        caminho = diretorio / f"{base}{extensao}"
+        caminho = DESIGN_DIR / f"{base}{extensao}"
         if caminho.is_file():
             dados = b64encode(caminho.read_bytes()).decode("ascii")
             return f"data:{MIME[extensao]};base64,{dados}"
     return ""
 
 
-def img_html(base, classe, pasta="utils", posicao=None):
-    uri = carregar_imagem(base, pasta)
+def img_html(base, classe, posicao=None):
+    uri = carregar_imagem(base)
     if not uri:
         return f'<div class="{classe} imagem-ausente" aria-hidden="true"></div>'
     estilo = f' style="object-position:{posicao}"' if posicao else ""
@@ -201,8 +200,8 @@ def mostrar_resultado(resultado):
 
 
 def cabecalho(tem_resultado):
-    evidencias = ('<a href="#evidencias">Evidências</a>' if tem_resultado
-                  else '<span class="nav-off" aria-disabled="true">Evidências</span>')
+    evidencias = ('<a class="nav-botao" href="#evidencias">Evidências</a>' if tem_resultado
+                  else '<button class="nav-botao" type="button" disabled>Evidências</button>')
     return (
         '<header class="site-header">'
         '<div class="marca">'
@@ -210,7 +209,7 @@ def cabecalho(tem_resultado):
         f'alt="Logo {NOME_APP}"></span>'
         f'<span class="marca-nome">{NOME_APP}</span>'
         '</div>'
-        f'<nav aria-label="Principal"><a href="#consultar">Consultar</a>{evidencias}</nav>'
+        f'<nav aria-label="Principal"><a class="nav-botao" href="#consultar">Consultar</a>{evidencias}</nav>'
         '</header>'
     )
 
@@ -237,10 +236,16 @@ def executar_grafo(pergunta):
 
 
 def main():
-    st.set_page_config(page_title=NOME_APP, page_icon=str(UTILS_DIR / "logo.jpeg"),
+    st.set_page_config(page_title=NOME_APP, page_icon=str(DESIGN_DIR / "logo.jpeg"),
                        layout="wide")
-    st.html(APP_DIR / "style.css")
-    navio = img_html("ship", "navio-svg", pasta="app")
+    fonte_cinzel = b64encode((DESIGN_DIR / "Cinzel.ttf").read_bytes()).decode("ascii")
+    st.html(
+        '<style>@font-face { font-family: "Cinzel"; '
+        f'src: url("data:font/ttf;base64,{fonte_cinzel}") format("truetype"); '
+        'font-style: normal; font-weight: 400 900; font-display: swap; }</style>'
+    )
+    st.html(DESIGN_DIR / "style.css")
+    navio = img_html("ship", "navio-svg")
 
     for chave, valor in {
         "pergunta": "", "pergunta_enviada": "", "pergunta_preservada": "",
